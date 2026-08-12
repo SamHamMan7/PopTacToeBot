@@ -1,0 +1,41 @@
+# Compiled output
+*.exe
+*.o
+*.obj
+*.a
+*.dll
+*.so
+*.dylib
+*.wasm
+
+# Build directories
+build/
+cmake-build-*/
+
+# Dependencies and Python caches
+node_modules/
+__pycache__/
+*.py[cod]
+
+# Generated matches, logs, and profiling output
+*.csv
+*.log
+mate.txt
+logs/
+l20/
+max/
+fairy_match_logs/
+
+# Download and update archives
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+match.txt

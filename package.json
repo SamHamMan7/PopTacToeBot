@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "poptactoe-fairy-stockfish-nnue.wasm": "^1.2.1"
+  }
+}
