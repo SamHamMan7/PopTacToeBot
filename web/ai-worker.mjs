@@ -1,4 +1,4 @@
-import { chooseComputerMove } from "./engine.mjs";
+import { chooseComputerMove } from "./strong-engine.mjs";
 
 self.addEventListener("message", (event) => {
   const { id, state, options } = event.data ?? {};
