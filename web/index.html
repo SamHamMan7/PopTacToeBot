@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b2d">
+  <meta name="description" content="Play Pop Tac Toe in the browser with selectable rules and a computer opponent.">
+  <title>Pop Tac Toe</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="layout-fix.css">
+</head>
+<body>
+  <a class="skip-link" href="#board">Skip to the board</a>
+
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Browser edition</p>
+      <h1>Pop Tac Toe</h1>
+      <p class="header-copy">
+        Pick a ruleset, place or move a checker, and let every adjacent checker pop away at the same time.
+      </p>
+    </div>
+    <a class="header-link" href="#rules">Read the rules</a>
+  </header>
+
+  <main>
+    <section class="game-layout" aria-label="Pop Tac Toe game">
+      <article class="game-card">
+        <div class="toolbar" aria-label="Game controls">
+          <button id="restartButton" class="button button-primary" type="button">Restart</button>
+
+          <div class="checker-stepper" aria-label="Checkers per player">
+            <span>Checkers</span>
+            <button id="decreaseCheckers" class="icon-button" type="button" aria-label="Use one fewer checker">−</button>
+            <output id="checkerCount" aria-live="polite">8</output>
+            <button id="increaseCheckers" class="icon-button" type="button" aria-label="Use one more checker">+</button>
+          </div>
+
+          <button id="undoButton" class="button" type="button">Undo</button>
+        </div>
+
+        <div class="score-strip" aria-live="polite">
+          <div>
+            <span class="score-label">Next</span>
+            <strong id="nextPlayer">Blue</strong>
+          </div>
+          <div>
+            <span class="score-label">Winner</span>
+            <strong id="winner">—</strong>
+          </div>
+          <div class="status-cell">
+            <span class="score-label">Status</span>
+            <strong id="gameStatus">Blue places first.</strong>
+          </div>
+        </div>
+
+        <div class="play-area">
+          <section class="bin-panel blue-bin-panel" aria-label="Blue storage bin">
+            <div class="bin-heading">
+              <span class="mini-piece blue-piece" aria-hidden="true"></span>
+              <h2>Blue bin</h2>
+            </div>
+            <button id="blueBinPiece" class="bin-piece blue" type="button" draggable="true" aria-label="Place a Blue checker from the bin">
+              <span aria-hidden="true"></span>
+            </button>
+            <output id="blueBinCount" class="bin-count">8</output>
+          </section>
+
+          <div class="board-column">
+            <div class="coordinate-row top-coordinates" aria-hidden="true">
+              <span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>
+            </div>
+            <div class="board-with-coordinates">
+              <div class="coordinate-column" aria-hidden="true">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>
+              </div>
+              <div id="board" class="board" role="grid" aria-label="Eight by eight Pop Tac Toe board"></div>
+            </div>
+            <p id="interactionHint" class="interaction-hint">
+              Click an empty square, or drag a checker from the bin.
+            </p>
+          </div>
+
+          <section class="bin-panel red-bin-panel" aria-label="Red storage bin">
+            <div class="bin-heading">
+              <span class="mini-piece red-piece" aria-hidden="true"></span>
+              <h2>Red bin</h2>
+            </div>
+            <button id="redBinPiece" class="bin-piece red" type="button" draggable="true" aria-label="Place a Red checker from the bin">
+              <span aria-hidden="true"></span>
+            </button>
+            <output id="redBinCount" class="bin-count">8</output>
+          </section>
+        </div>
+
+        <section class="move-history" aria-labelledby="historyTitle">
+          <div class="section-heading-row">
+            <h2 id="historyTitle">Move history</h2>
+            <span id="searchStats" class="search-stats"></span>
+          </div>
+          <ol id="moveHistory" class="history-list">
+            <li class="history-empty">No moves yet.</li>
+          </ol>
+        </section>
+      </article>
+
+      <aside class="control-card" aria-label="Game setup">
+        <div class="control-section preset-section">
+          <h2>Start with a preset</h2>
+          <div class="button-row">
+            <button class="button preset-button" type="button" data-preset="beginner">Beginner</button>
+            <button class="button preset-button" type="button" data-preset="solver">Solver torus</button>
+          </div>
+          <p class="control-note">
+            Beginner uses Reincarnation, Continue, move when all pieces are on the board, and King movement.
+          </p>
+        </div>
+
+        <fieldset class="control-section">
+          <legend>Mode</legend>
+          <label class="choice-card">
+            <input type="radio" name="mode" value="twoPlayers" checked>
+            <span><strong>Two players</strong><small>Both colors use this browser.</small></span>
+          </label>
+          <label class="choice-card">
+            <input type="radio" name="mode" value="computer">
+            <span><strong>Computer</strong><small>Human versus the browser AI.</small></span>
+          </label>
+
+          <div id="computerOptions" class="nested-options" hidden>
+            <label>
+              Human color
+              <select id="humanColor">
+                <option value="1">Blue — move first</option>
+                <option value="2">Red — computer moves first</option>
+              </select>
+            </label>
+            <label>
+              Difficulty
+              <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+                <option value="strong">Strong browser search</option>
+              </select>
+            </label>
+            <label>
+              Think time: <output id="thinkTimeOutput">0.7 s</output>
+              <input id="thinkTime" type="range" min="0.1" max="3" step="0.1" value="0.7">
+            </label>
+            <p class="control-note warning-note">
+              Computer mode is locked to Torus + Continue + Move When All on Board + King. Strong now uses the full selected think time with iterative deepening and a transposition table, but the C++ WebAssembly engine is still a future upgrade.
+            </p>
+          </div>
+        </fieldset>
+
+        <fieldset class="control-section compact-options">
+          <legend>Display</legend>
+          <label class="switch-row">
+            <span>Turn labels</span>
+            <input id="turnLabels" type="checkbox" checked>
+          </label>
+          <label class="switch-row">
+            <span>Highlight legal moves</span>
+            <input id="highlightMoves" type="checkbox" checked>
+          </label>
+        </fieldset>
+
+        <div class="control-section">
+          <div class="section-heading-row">
+            <h2>Rules</h2>
+            <span id="rulesetBadge" class="badge">Beginner</span>
+          </div>
+
+          <details open>
+            <summary>Edge behavior</summary>
+            <div class="radio-stack" data-rule-group="edge">
+              <label><input type="radio" name="edge" value="reincarnation" checked> Reincarnation</label>
+              <label><input type="radio" name="edge" value="ringout"> Ringout</label>
+              <label><input type="radio" name="edge" value="blocked"> Blocked</label>
+              <label><input type="radio" name="edge" value="torus"> Torus</label>
+              <label><input type="radio" name="edge" value="klein"> Klein</label>
+            </div>
+          </details>
+
+          <details>
+            <summary>All pieces on board</summary>
+            <div class="radio-stack">
+              <label><input type="radio" name="allOnBoard" value="win"> Win immediately</label>
+              <label><input type="radio" name="allOnBoard" value="continue" checked> Continue</label>
+            </div>
+          </details>
+
+          <details>
+            <summary>When movement is allowed</summary>
+            <div class="radio-stack">
+              <label><input type="radio" name="moveWhen" value="never"> Never</label>
+              <label><input type="radio" name="moveWhen" value="allOnBoard" checked> When that player’s bin is empty</label>
+              <label><input type="radio" name="moveWhen" value="always"> Always</label>
+            </div>
+          </details>
+
+          <details>
+            <summary>How pieces move</summary>
+            <div class="radio-stack">
+              <label><input type="radio" name="moveHow" value="king" checked> King</label>
+              <label><input type="radio" name="moveHow" value="rook"> Rook</label>
+              <label><input type="radio" name="moveHow" value="bishop"> Bishop</label>
+              <label><input type="radio" name="moveHow" value="queen"> Queen</label>
+              <label><input type="radio" name="moveHow" value="anywhere"> Anywhere</label>
+            </div>
+          </details>
+
+          <details>
+            <summary>Movement options</summary>
+            <div class="switch-stack">
+              <label class="switch-row"><span>Allow zero-length moves</span><input id="zeroMove" type="checkbox"></label>
+              <label class="switch-row"><span>Allow jumping</span><input id="jumps" type="checkbox"></label>
+            </div>
+          </details>
+        </div>
+
+        <section class="control-section proof-card" aria-labelledby="proofStatusTitle">
+          <div class="proof-heading">
+            <span class="proof-dot milestone" aria-hidden="true"></span>
+            <h2 id="proofStatusTitle">Formal verification</h2>
+          </div>
+          <p><strong>Milestone:</strong> core torus placement and local checker soundness.</p>
+          <p><strong>Full certificate:</strong> not yet imported into Lean.</p>
+          <a href="#formalization">How the certificate becomes a theorem</a>
+        </section>
+      </aside>
+    </section>
+
+    <section id="rules" class="rules-section">
+      <p class="eyebrow">Rules reference</p>
+      <h2>How Pop Tac Toe works</h2>
+      <div class="rules-grid">
+        <article>
+          <h3>Basic turn</h3>
+          <p>
+            Players alternate. Place a checker on an empty square, or make a permitted board move. After the checker lands, every occupied neighboring square tries to move one more square directly away from it. All successful pushes are calculated from the same snapshot and then applied together.
+          </p>
+        </article>
+        <article>
+          <h3>Winning</h3>
+          <p>
+            Lines are checked after the pop. Three matching checkers in a horizontal, vertical, or diagonal line win. If both colors form a line on the same turn, the result is a draw.
+          </p>
+        </article>
+        <article>
+          <h3>Edge rules</h3>
+          <p>
+            Reincarnation returns a fallen checker to its owner’s bin. Ringout removes it. Blocked prevents the fall. Torus wraps both directions. Klein wraps left/right normally and twists the column when crossing the top or bottom.
+          </p>
+        </article>
+        <article>
+          <h3>Movement</h3>
+          <p>
+            Movement may be disabled, enabled only after a player’s bin is empty, or always enabled. King, Rook, Bishop, Queen, and Anywhere movement are available. Movement itself does not wrap across an edge; the pop follows the selected edge surface.
+          </p>
+        </article>
+        <article>
+          <h3>Draws</h3>
+          <p>
+            A draw occurs when both players form lines together, no legal move remains, or a complete position repeats. Ringout can also produce a draw if both players are reduced to two surviving checkers at once.
+          </p>
+        </article>
+        <article>
+          <h3>Computer ruleset</h3>
+          <p>
+            The research engine is optimized for eight checkers, Torus edges, Continue, movement when the current player’s bin is empty, King movement, no zero move, and no jumps.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="formalization" class="formalization-section">
+      <p class="eyebrow">Proof architecture</p>
+      <h2>From a solver certificate to a Lean theorem</h2>
+      <div class="proof-steps">
+        <article><span>1</span><div><h3>Freeze the ruleset</h3><p>Give the supported configuration a versioned identifier and make the C++, browser, certificate generator, and Lean model agree on every transition.</p></div></article>
+        <article><span>2</span><div><h3>Generate a certificate</h3><p>The fast C++ solver explores the reachable game graph and records, for each claimed winning state, a winning move and enough successor information for independent checking.</p></div></article>
+        <article><span>3</span><div><h3>Write a small checker</h3><p>Lean reads compact certificate entries, recomputes legal moves and state transitions, and rejects malformed, missing, or contradictory entries.</p></div></article>
+        <article><span>4</span><div><h3>Prove checker soundness once</h3><p>Prove that whenever the checker accepts a complete certificate, the mathematical force-win predicate holds for every accepted state.</p></div></article>
+        <article><span>5</span><div><h3>Verify chunks bottom-up</h3><p>Split the large table by remaining placement rank and symmetry class so each Lean module checks a manageable block whose successors were already verified.</p></div></article>
+        <article><span>6</span><div><h3>Publish the theorem and manifest</h3><p>Record the ruleset ID, certificate hash, solver commit, Lean version, checker result, and final theorem about the initial position.</p></div></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Pop Tac Toe browser prototype. All gameplay runs locally in your browser.</p>
+  </footer>
+
+  <noscript>This game requires JavaScript.</noscript>
+  <script type="module" src="app.mjs"></script>
+</body>
+</html>
