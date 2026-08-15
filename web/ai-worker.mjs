@@ -1,14 +1,4 @@
-import { chooseComputerMove } from "./strong-engine.mjs";
-
-self.addEventListener("message", (event) => {
-  const { id, state, options } = event.data ?? {};
-  try {
-    const result = chooseComputerMove(state, options);
-    self.postMessage({ id, result });
-  } catch (error) {
-    self.postMessage({
-      id,
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-});
+import { chooseComputerMove as chooseJsMove } from './strong-engine.mjs';
+import { chooseWasmMove, warmWasmEngine } from './wasm-engine.mjs';
+warmWasmEngine().catch(()=>{});
+self.addEventListener('message',async event=>{const {id,state,options={}}=event.data??{};try{let result;if(options.difficulty==='strong'||options.difficulty==='maximum'){try{result=await chooseWasmMove(state,{timeLimitMs:options.timeLimitMs,maxDepth:options.difficulty==='maximum'?64:48})}catch{result=chooseJsMove(state,{...options,difficulty:'strong',maxDepth:options.difficulty==='maximum'?64:48});if(result)result.backend='JS fallback'}}else{result=chooseJsMove(state,options);if(result)result.backend='JS'}self.postMessage({id,result})}catch(error){self.postMessage({id,error:error instanceof Error?error.message:String(error)})}});
