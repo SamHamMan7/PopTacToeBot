@@ -1,0 +1,32 @@
+name: Lean
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lean/**"
+      - ".github/workflows/lean.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "lean/**"
+      - ".github/workflows/lean.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: lean
+          build: true
+          leanchecker: true
+          use-mathlib-cache: false
