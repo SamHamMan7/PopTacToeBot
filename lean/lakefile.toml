@@ -1,0 +1,6 @@
+name = "poptactoe-lean"
+version = "0.1.0"
+defaultTargets = ["PopTacToe"]
+
+[[lean_lib]]
+name = "PopTacToe"
