@@ -28,5 +28,9 @@ jobs:
         with:
           lake-package-directory: lean
           build: true
-          leanchecker: true
+          leanchecker: false
           use-mathlib-cache: false
+
+      - name: Check environment with leanchecker
+        working-directory: lean
+        run: lake env leanchecker PopTacToe.Tests
