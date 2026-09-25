@@ -1,0 +1,252 @@
+/* Simpler visual layer: keeps all game behavior and controls intact. */
+:root {
+  --surface-soft: #f7f7f7;
+  --line: #d8d8d8;
+  --line-strong: #bdbdbd;
+  --shadow: none;
+  --shadow-soft: none;
+  --radius-xl: 12px;
+  --radius-lg: 10px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+}
+
+body {
+  background: #f3f3f3;
+}
+
+.site-header {
+  align-items: center;
+  padding-top: 24px;
+  padding-bottom: 18px;
+}
+
+.site-header h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  letter-spacing: -0.04em;
+}
+
+.eyebrow,
+.header-copy {
+  display: none;
+}
+
+.header-link {
+  padding: 8px 12px;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+.game-layout {
+  gap: 16px;
+}
+
+.game-card,
+.control-card,
+.rules-section,
+.formalization-section {
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.game-card,
+.control-card {
+  border-radius: 12px;
+}
+
+.toolbar {
+  padding: 12px 14px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.toolbar .checker-stepper {
+  color: var(--ink);
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+
+.button,
+.icon-button {
+  border-radius: 7px;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.button-primary {
+  color: #fff;
+  background: var(--navy);
+  border-color: var(--navy);
+}
+
+.score-strip {
+  background: #fff;
+}
+
+.score-strip > div {
+  padding: 10px 14px;
+}
+
+.play-area {
+  gap: 14px;
+  padding: 22px;
+}
+
+.bin-panel {
+  padding: 12px 8px;
+  border-radius: 9px;
+  background: #fafafa;
+}
+
+.blue-bin-panel,
+.red-bin-panel {
+  background: #fafafa;
+}
+
+.bin-piece {
+  width: 58px;
+  height: 58px;
+  box-shadow: none;
+}
+
+.bin-piece.blue {
+  background: var(--blue);
+}
+
+.bin-piece.red {
+  background: var(--red);
+}
+
+.mini-piece,
+.checker {
+  box-shadow: none;
+}
+
+.checker.blue {
+  background: var(--blue);
+}
+
+.checker.red {
+  background: var(--red);
+}
+
+.board {
+  border: 2px solid var(--navy);
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.board-cell,
+.board-cell:nth-child(16n + 1),
+.board-cell:nth-child(16n + 3),
+.board-cell:nth-child(16n + 5),
+.board-cell:nth-child(16n + 7),
+.board-cell:nth-child(16n + 10),
+.board-cell:nth-child(16n + 12),
+.board-cell:nth-child(16n + 14),
+.board-cell:nth-child(16n + 16) {
+  background: #fff;
+}
+
+.board-cell:nth-child(16n + 1),
+.board-cell:nth-child(16n + 3),
+.board-cell:nth-child(16n + 5),
+.board-cell:nth-child(16n + 7),
+.board-cell:nth-child(16n + 10),
+.board-cell:nth-child(16n + 12),
+.board-cell:nth-child(16n + 14),
+.board-cell:nth-child(16n + 16) {
+  background: #f1f1f1;
+}
+
+.interaction-hint {
+  margin-top: 8px;
+}
+
+.move-history {
+  padding: 0 18px 18px;
+}
+
+.history-list {
+  padding: 8px;
+  background: #fff;
+  border-radius: 7px;
+}
+
+.history-list li {
+  border-radius: 5px;
+}
+
+.control-section {
+  padding: 15px;
+}
+
+.choice-card,
+.nested-options,
+.warning-note {
+  border-radius: 7px;
+}
+
+.choice-card:has(input:checked) {
+  background: #eef4ff;
+}
+
+.proof-card {
+  background: #fff;
+}
+
+.rules-section,
+.formalization-section {
+  margin-top: 18px;
+  padding: 24px;
+  border-radius: 12px;
+}
+
+.rules-section > h2,
+.formalization-section > h2 {
+  margin-bottom: 16px;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.rules-grid,
+.proof-steps {
+  gap: 10px;
+}
+
+.rules-grid article,
+.proof-steps article {
+  padding: 14px;
+  background: #fff;
+  border-radius: 7px;
+}
+
+.proof-steps article > span {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+footer {
+  padding-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+  .site-header {
+    padding-top: 18px;
+  }
+
+  .game-card,
+  .control-card,
+  .rules-section,
+  .formalization-section {
+    border-radius: 10px;
+  }
+
+  .play-area {
+    padding: 14px 8px 20px;
+  }
+}
