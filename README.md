@@ -7,10 +7,12 @@ The project currently contains a CPU alpha-beta bot, a pure MCTS baseline,
 terminal play, paired arenas, live self-play, rule tests, state counting, and
 an automated match runner for the published Fairy-Stockfish opponent.
 
-> **Status:** active research. The game has not been solved. The strongest bot
-> is optimized for the Torus configuration described below; travel is legal
-> and tested but has not yet received the same search optimization as the
-> placement phase.
+> **Status:** the exact 8x8 Torus ruleset documented below has a formally
+> verified Blue forced win. An independent C++ verifier accepted an 879,896-state
+> certificate, and the generated Lean replay built successfully through
+> `PopTacToe.Generated.Root.initial_blue_forces_win`. The proof only claims
+> this exact ruleset; it does not apply to Beginner/Reincarnation or other
+> configurations.
 
 ## Tested configuration
 
@@ -127,16 +129,41 @@ game-theoretic result.
 Additional research tools may include the proof solver, state counter, and
 strategy verifier.
 
+## Formal result
+
+For the tested Torus configuration above, Blue can force a terminal win before
+travel begins. The independently checked certificate contains 879,896 states.
+The full generated Lean replay completed successfully, and `leanchecker`
+accepted both `PopTacToe.Generated.Root` and `PopTacToe.Tests`.
+
+The final generated theorem is:
+
+```text
+PopTacToe.Generated.Root.initial_blue_forces_win
+```
+
+The generated theorem reports only Lean's standard `propext` and
+`Quot.sound` axioms, with no `sorryAx`.
+
+Reproduction commands used locally:
+
+```bash
+cd lean
+lake build
+lake env leanchecker PopTacToe.Generated.Root
+lake env leanchecker PopTacToe.Tests
+```
+
+The large generated certificate-replay modules are not yet committed to this
+repository; publishing those generated files and their manifest is the next
+reproducibility step.
+
 ## Current research direction
 
-The immediate goal is to audit forced-win claims from fresh search states. Torus
-symmetry reduces Red's replies after the canonical first placement to twelve
-unique classes. Solving those classes on demand is more practical than building
-a complete table for every position through eight plies.
-
-After that, planned work includes stronger move ordering and search, a
-repetition-aware travel transposition table, broader surface support, and only
-then policy/value-network experiments.
+The Torus winner is now established for the exact ruleset above. Remaining work
+focuses on publishing the complete generated Lean replay and manifest, improving
+engine strength and speed, and exploring other rulesets such as
+Beginner/Reincarnation.
 
 ## Attribution
 
