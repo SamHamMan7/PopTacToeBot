@@ -58,5 +58,4 @@ axioms.
 
 The generated replay modules are published as
 `certificate/Generated.zip`. GitHub Actions extracts that archive into
-`lean/PopTacToe/Generated` before building and checking the root theorem.
-The archive hash is recorded in `certificate/manifest.json`.
+`lean/PopTacToe/Generated`, checks the archive metadata, builds the core Lean project and tests, and smoke-checks a representative generated chunk. The complete root replay is still reproduced with the commands above; it exceeds the current hosted runner execution window. The archive hash is recorded in `certificate/manifest.json`.
