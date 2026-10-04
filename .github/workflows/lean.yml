@@ -26,6 +26,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Extract generated Lean replay
+        shell: bash
+        run: |
+          rm -rf lean/PopTacToe/Generated
+          unzip -q certificate/Generated.zip -d lean/PopTacToe
+          test -f lean/PopTacToe/Generated/Root.lean
+
       - uses: leanprover/lean-action@v1
         with:
           lake-package-directory: lean
@@ -33,24 +40,19 @@ jobs:
           leanchecker: false
           use-mathlib-cache: false
 
-      - name: Check milestone tests with leanchecker
+      - name: Check full generated root theorem
+        working-directory: lean
+        run: lake env leanchecker PopTacToe.Generated.Root
+
+      - name: Check test module
         working-directory: lean
         run: lake env leanchecker PopTacToe.Tests
-
-      - name: Check full generated root theorem when published
-        working-directory: lean
-        shell: bash
-        run: |
-          if [ -f PopTacToe/Generated/Root.lean ]; then
-            lake env leanchecker PopTacToe.Generated.Root
-          else
-            echo "Generated root module is not published in this checkout yet; skipping full replay check."
-          fi
 
       - name: Verify certificate manifest metadata
         shell: bash
         run: |
           python - <<'PY'
+          import hashlib
           import json
           from pathlib import Path
 
@@ -64,5 +66,11 @@ jobs:
           assert data["leanToolchain"] == "leanprover/lean4:v4.32.0"
           assert data["certificateSha256"] == "28789eb3b859be0e8999ec224dc946a94b0c3d139d6a577e00e86c52f6573647"
           assert data["rootTheorem"] == "PopTacToe.Generated.Root.initial_blue_forces_win"
-          print("manifest metadata OK")
+          assert data["generatedReplayPublished"] is True
+
+          archive = Path(data["generatedReplayArchive"]["path"])
+          assert archive.stat().st_size == data["generatedReplayArchive"]["bytes"]
+          digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+          assert digest == data["generatedReplayArchive"]["sha256"]
+          print("manifest and generated replay archive OK")
           PY
