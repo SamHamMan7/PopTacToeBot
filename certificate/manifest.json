@@ -27,7 +27,7 @@
     "leancheckerRoot": "passed",
     "leancheckerTests": "passed"
   },
-  "notes": "The full generated Lean replay is published as certificate/Generated.zip. CI extracts it into lean/PopTacToe/Generated, builds the Lean project, and runs leanchecker on the generated root theorem and test module.",
+  "notes": "The full generated Lean replay is published as certificate/Generated.zip. The full root theorem was built and leanchecked locally. Hosted CI verifies the archive hash, core Lean project, test module, and a representative generated replay chunk; the complete root build exceeds the hosted runner's execution window.",
   "generatedReplayArchive": {
     "path": "certificate/Generated.zip",
     "bytes": 7343588,
