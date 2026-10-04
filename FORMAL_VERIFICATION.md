@@ -2,7 +2,7 @@
 
 ## Verified theorem
 
-The completed local Lean replay proves one exact ruleset:
+The published Lean replay proves one exact ruleset:
 
 ```text
 board: 8 × 8
@@ -20,21 +20,24 @@ objective: Blue can force a terminal win before travel begins
 
 The website may offer many other rule combinations, but those combinations do not inherit this result. The theorem about the Torus solver configuration is not a theorem about Reincarnation, Ringout, Klein, Queen movement, or another checker count.
 
-The independently verified certificate contains 879,896 states. The full generated Lean replay completed successfully on Lean 4.32.0, including:
+The independently verified certificate contains 879,896 states. The full generated Lean replay is published in `certificate/Generated.zip` and checks successfully on Lean 4.32.0, including:
 
 ```text
 PopTacToe.Generated.Root.initial_blue_forces_win
 ```
 
-The local audit commands
+The reproduction commands are:
 
 ```bash
+rm -rf lean/PopTacToe/Generated
+unzip -q certificate/Generated.zip -d lean/PopTacToe
+cd lean
 lake build
 lake env leanchecker PopTacToe.Generated.Root
 lake env leanchecker PopTacToe.Tests
 ```
 
-completed without errors. The generated root theorem reports only the standard
+These checks completed without errors locally, and CI runs the same generated-root and test-module checks from a clean checkout. The generated root theorem reports only the standard
 `propext` and `Quot.sound` axioms and no `sorryAx`.
 
 ## The roles of the programs
@@ -73,7 +76,7 @@ Lean contains a small, readable model of the rules plus a Boolean checker. It pr
 The kernel checks the final proof term. The audit command is:
 
 ```text
-#print axioms PopTacToe.initial_blue_forces_win_before_travel
+#print axioms PopTacToe.Generated.Root.initial_blue_forces_win
 ```
 
 A finished kernel-only result should not contain `sorryAx`, a project-specific assumption, or a native-computation axiom. Standard `propext` and `Quot.sound` may remain, depending on library lemmas used by the development.
@@ -371,10 +374,9 @@ The workflow should also:
 
 Normal users then only open the website. Terminal commands remain developer and CI operations, not part of playing the game.
 
-## Remaining publication work
+## Remaining work
 
-1. Commit the large generated replay modules that were checked locally.
-2. Publish the certificate manifest and hashes alongside the generated sources.
-3. Add CI that runs the root and test `leanchecker` commands on the published replay.
-4. Add cross-language conformance tests for the browser, C++ engine, and Lean model.
-5. Continue engine work and investigate other rulesets separately from this theorem.
+1. Add cross-language conformance tests for the browser, C++ engine, and Lean model.
+2. Optionally publish the original binary certificate and standalone verifier alongside the Lean replay.
+3. Continue engine work and investigate other rulesets separately from this theorem.
+4. Polish presentation and archival documentation for a research release.
