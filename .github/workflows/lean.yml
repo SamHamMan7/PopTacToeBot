@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - "lean/**"
+      - "certificate/**"
       - ".github/workflows/lean.yml"
   pull_request:
     branches: [main]
     paths:
       - "lean/**"
+      - "certificate/**"
       - ".github/workflows/lean.yml"
   workflow_dispatch:
 
@@ -19,7 +21,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +33,36 @@ jobs:
           leanchecker: false
           use-mathlib-cache: false
 
-      - name: Check environment with leanchecker
+      - name: Check milestone tests with leanchecker
         working-directory: lean
         run: lake env leanchecker PopTacToe.Tests
+
+      - name: Check full generated root theorem when published
+        working-directory: lean
+        shell: bash
+        run: |
+          if [ -f PopTacToe/Generated/Root.lean ]; then
+            lake env leanchecker PopTacToe.Generated.Root
+          else
+            echo "Generated root module is not published in this checkout yet; skipping full replay check."
+          fi
+
+      - name: Verify certificate manifest metadata
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = Path("certificate/manifest.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
+
+          assert data["format"] == "poptactoe-certificate-v1"
+          assert data["ruleset"] == "torus-continue-all-on-board-king-8-v1"
+          assert data["objective"] == "blue-forced-terminal-win-before-travel"
+          assert data["stateCount"] == 879896
+          assert data["leanToolchain"] == "leanprover/lean4:v4.32.0"
+          assert data["certificateSha256"] == "28789eb3b859be0e8999ec224dc946a94b0c3d139d6a577e00e86c52f6573647"
+          assert data["rootTheorem"] == "PopTacToe.Generated.Root.initial_blue_forces_win"
+          print("manifest metadata OK")
+          PY
