@@ -226,9 +226,9 @@
             <span class="proof-dot milestone" aria-hidden="true"></span>
             <h2 id="proofStatusTitle">Formal verification</h2>
           </div>
-          <p><strong>Milestone:</strong> core torus placement and local checker soundness.</p>
-          <p><strong>Full certificate:</strong> not yet imported into Lean.</p>
-          <a href="#formalization">How the certificate becomes a theorem</a>
+          <p><strong>Verified:</strong> Blue has a forced win for the exact 8-checker Torus solver ruleset.</p>
+          <p><strong>Lean:</strong> the full 879,896-state certificate replay reaches the root theorem.</p>
+          <a href="#formalization">How the certificate was verified</a>
         </section>
       </aside>
     </section>
@@ -278,14 +278,14 @@
 
     <section id="formalization" class="formalization-section">
       <p class="eyebrow">Proof architecture</p>
-      <h2>From a solver certificate to a Lean theorem</h2>
+      <h2>How the Torus result was verified in Lean</h2>
       <div class="proof-steps">
         <article><span>1</span><div><h3>Freeze the ruleset</h3><p>Give the supported configuration a versioned identifier and make the C++, browser, certificate generator, and Lean model agree on every transition.</p></div></article>
         <article><span>2</span><div><h3>Generate a certificate</h3><p>The fast C++ solver explores the reachable game graph and records, for each claimed winning state, a winning move and enough successor information for independent checking.</p></div></article>
         <article><span>3</span><div><h3>Write a small checker</h3><p>Lean reads compact certificate entries, recomputes legal moves and state transitions, and rejects malformed, missing, or contradictory entries.</p></div></article>
         <article><span>4</span><div><h3>Prove checker soundness once</h3><p>Prove that whenever the checker accepts a complete certificate, the mathematical force-win predicate holds for every accepted state.</p></div></article>
         <article><span>5</span><div><h3>Verify chunks bottom-up</h3><p>Split the large table by remaining placement rank and symmetry class so each Lean module checks a manageable block whose successors were already verified.</p></div></article>
-        <article><span>6</span><div><h3>Publish the theorem and manifest</h3><p>Record the ruleset ID, certificate hash, solver commit, Lean version, checker result, and final theorem about the initial position.</p></div></article>
+        <article><span>6</span><div><h3>Reach the root theorem</h3><p>The full replay builds through <code>PopTacToe.Generated.Root.initial_blue_forces_win</code>, establishing a Blue forced win for the exact solver ruleset.</p></div></article>
       </div>
     </section>
   </main>

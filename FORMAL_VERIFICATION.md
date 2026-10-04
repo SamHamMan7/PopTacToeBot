@@ -1,8 +1,8 @@
-# Formal verification and certificate plan
+# Formal verification and certificate replay
 
-## What is being proved
+## Verified theorem
 
-The proof must name one exact ruleset. The current solver target is:
+The completed local Lean replay proves one exact ruleset:
 
 ```text
 board: 8 × 8
@@ -18,7 +18,24 @@ simultaneous Blue and Red lines: Draw
 objective: Blue can force a terminal win before travel begins
 ```
 
-The website may offer many other rule combinations, but those combinations must not inherit the proof badge. A theorem about the Torus solver configuration is not a theorem about Reincarnation, Ringout, Klein, Queen movement, or another checker count.
+The website may offer many other rule combinations, but those combinations do not inherit this result. The theorem about the Torus solver configuration is not a theorem about Reincarnation, Ringout, Klein, Queen movement, or another checker count.
+
+The independently verified certificate contains 879,896 states. The full generated Lean replay completed successfully on Lean 4.32.0, including:
+
+```text
+PopTacToe.Generated.Root.initial_blue_forces_win
+```
+
+The local audit commands
+
+```bash
+lake build
+lake env leanchecker PopTacToe.Generated.Root
+lake env leanchecker PopTacToe.Tests
+```
+
+completed without errors. The generated root theorem reports only the standard
+`propext` and `Quot.sound` axioms and no `sorryAx`.
 
 ## The roles of the programs
 
@@ -354,13 +371,10 @@ The workflow should also:
 
 Normal users then only open the website. Terminal commands remain developer and CI operations, not part of playing the game.
 
-## Immediate next milestones
+## Remaining publication work
 
-1. Merge the browser prototype and deploy it as a static site.
-2. Commit the existing `lean/` milestone to this repository.
-3. Add `Symmetry.lean` and prove transition/outcome preservation.
-4. Freeze and document the existing certificate format and SHA-256.
-5. Write a converter that emits a tiny generated Lean chunk.
-6. Prove the tiny chunk through the generic soundness theorem.
-7. Tune chunk size, then generate and check all 879,896 entries.
-8. Export the final root theorem and verification manifest.
+1. Commit the large generated replay modules that were checked locally.
+2. Publish the certificate manifest and hashes alongside the generated sources.
+3. Add CI that runs the root and test `leanchecker` commands on the published replay.
+4. Add cross-language conformance tests for the browser, C++ engine, and Lean model.
+5. Continue engine work and investigate other rulesets separately from this theorem.
