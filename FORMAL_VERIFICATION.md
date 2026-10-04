@@ -37,7 +37,7 @@ lake env leanchecker PopTacToe.Generated.Root
 lake env leanchecker PopTacToe.Tests
 ```
 
-These checks completed without errors locally, and CI runs the same generated-root and test-module checks from a clean checkout. The generated root theorem reports only the standard
+These checks completed without errors locally. Hosted CI verifies the published archive hash, builds the core Lean project and tests, and smoke-checks a representative generated replay chunk from a clean checkout. The complete generated-root build exceeds the current hosted runner execution window. The generated root theorem reports only the standard
 `propext` and `Quot.sound` axioms and no `sorryAx`.
 
 ## The roles of the programs
