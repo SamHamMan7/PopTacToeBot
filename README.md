@@ -154,8 +154,10 @@ lake env leanchecker PopTacToe.Generated.Root
 lake env leanchecker PopTacToe.Tests
 ```
 
-The large generated certificate-replay modules are not yet committed to this
-repository; publishing those generated files and their manifest is the next
+The certificate metadata is recorded in `certificate/manifest.json`, including
+the exact ruleset, state count, Lean version, root theorem, and certificate
+SHA-256. The large generated certificate-replay modules are not yet committed
+to this repository; publishing those generated files is the remaining
 reproducibility step.
 
 ## Current research direction
