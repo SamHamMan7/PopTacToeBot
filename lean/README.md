@@ -27,11 +27,15 @@ Lean's standard `propext` and `Quot.sound` axioms.
 
 ## Check it
 
-Install Lean 4 through Elan or the official VS Code Lean extension, then run:
+Install Lean 4 through Elan or the official VS Code Lean extension, then from
+the repository root run:
 
 ```bash
+rm -rf lean/PopTacToe/Generated
+unzip -q certificate/Generated.zip -d lean/PopTacToe
 cd lean
 lake build
+lake env leanchecker PopTacToe.Generated.Root
 lake env leanchecker PopTacToe.Tests
 ```
 
@@ -52,6 +56,7 @@ The build completed all 2149 jobs, including the root theorem. The generated
 root theorem depends only on Lean's standard `propext` and `Quot.sound`
 axioms.
 
-The large generated replay modules are still local and have not yet been
-committed here. Until they are published, this repository contains the
-formalization milestone but not the complete reproducible 879,896-state replay.
+The generated replay modules are published as
+`certificate/Generated.zip`. GitHub Actions extracts that archive into
+`lean/PopTacToe/Generated` before building and checking the root theorem.
+The archive hash is recorded in `certificate/manifest.json`.
