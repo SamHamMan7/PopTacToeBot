@@ -42,7 +42,20 @@ jobs:
 
       - name: Build full generated root theorem
         working-directory: lean
-        run: lake build PopTacToe.Generated.Root
+        shell: bash
+        run: |
+          set +e
+          lake build PopTacToe.Generated.Root > full-replay-build.log 2>&1 &
+          pid=$!
+          while kill -0 "$pid" 2>/dev/null; do
+            echo "Full Lean replay build is still running..."
+            tail -n 3 full-replay-build.log || true
+            sleep 30
+          done
+          wait "$pid"
+          status=$?
+          cat full-replay-build.log
+          exit "$status"
 
       - name: Check full generated root theorem
         working-directory: lean
