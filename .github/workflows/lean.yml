@@ -40,6 +40,10 @@ jobs:
           leanchecker: false
           use-mathlib-cache: false
 
+      - name: Build full generated root theorem
+        working-directory: lean
+        run: lake build PopTacToe.Generated.Root
+
       - name: Check full generated root theorem
         working-directory: lean
         run: lake env leanchecker PopTacToe.Generated.Root
