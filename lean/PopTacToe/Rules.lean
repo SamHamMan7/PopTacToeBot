@@ -44,6 +44,10 @@ def boardOf (cells : List Square) : Board :=
 def contains (pieces : Board) (cell : Square) : Bool :=
   pieces.getLsbD cell.val
 
+/-- Remove every bit in `clear` that is present in `pieces`. -/
+def clearBoard (pieces clear : Board) : Board :=
+  pieces ^^^ (pieces &&& clear)
+
 def emptyAt (state : State) (cell : Square) : Bool :=
   !(contains state.occupied cell)
 
