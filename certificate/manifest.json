@@ -1,0 +1,31 @@
+{
+  "format": "poptactoe-certificate-v1",
+  "ruleset": "torus-continue-all-on-board-king-8-v1",
+  "board": "8x8",
+  "checkersPerPlayer": 8,
+  "edge": "torus",
+  "allOnBoard": "continue",
+  "moveWhen": "all-on-board",
+  "movement": "king",
+  "zeroLengthMove": false,
+  "jumps": false,
+  "winCheck": "after-simultaneous-pop",
+  "simultaneousLines": "draw",
+  "objective": "blue-forced-terminal-win-before-travel",
+  "stateCount": 879896,
+  "certificateBytes": 17597952,
+  "certificateSha256": "28789eb3b859be0e8999ec224dc946a94b0c3d139d6a577e00e86c52f6573647",
+  "leanToolchain": "leanprover/lean4:v4.32.0",
+  "rootTheorem": "PopTacToe.Generated.Root.initial_blue_forces_win",
+  "kernelAxiomsObserved": [
+    "propext",
+    "Quot.sound"
+  ],
+  "generatedReplayPublished": false,
+  "localVerification": {
+    "lakeBuild": "passed",
+    "leancheckerRoot": "passed",
+    "leancheckerTests": "passed"
+  },
+  "notes": "The full generated replay was checked locally and is not yet committed to this repository. Set generatedReplayPublished to true only after the generated modules are published and CI verifies the root theorem from a clean checkout."
+}
