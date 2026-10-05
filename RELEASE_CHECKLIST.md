@@ -4,7 +4,7 @@ The Torus proof result is complete. This checklist tracks the remaining publicat
 
 ## Required before v1.0
 
-- [ ] Choose and add an open-source license.
+- [x] Choose and add an open-source license (MIT).
 - [ ] Publish the original `proof.ptc` certificate as a GitHub Release asset.
 - [ ] Include the standalone verifier binary or build instructions in the release.
 - [ ] Record the certificate SHA-256 in the release notes:
