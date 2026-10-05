@@ -145,9 +145,11 @@ PopTacToe.Generated.Root.initial_blue_forces_win
 The generated theorem reports only Lean's standard `propext` and
 `Quot.sound` axioms, with no `sorryAx`.
 
-Reproduction commands used locally:
+Reproduce the full Lean replay from a fresh checkout with:
 
 ```bash
+rm -rf lean/PopTacToe/Generated
+unzip -q certificate/Generated.zip -d lean/PopTacToe
 cd lean
 lake build
 lake env leanchecker PopTacToe.Generated.Root
@@ -155,17 +157,17 @@ lake env leanchecker PopTacToe.Tests
 ```
 
 The certificate metadata is recorded in `certificate/manifest.json`, including
-the exact ruleset, state count, Lean version, root theorem, and certificate
-SHA-256. The large generated certificate-replay modules are not yet committed
-to this repository; publishing those generated files is the remaining
-reproducibility step.
+the exact ruleset, state count, Lean version, root theorem, certificate
+SHA-256, and SHA-256 of the published generated-replay archive. The generated
+Lean modules are stored compactly as `certificate/Generated.zip` and are
+expanded by CI before verification.
 
 ## Current research direction
 
-The Torus winner is now established for the exact ruleset above. Remaining work
-focuses on publishing the complete generated Lean replay and manifest, improving
-engine strength and speed, and exploring other rulesets such as
-Beginner/Reincarnation.
+The Torus winner is established and the full generated Lean replay is now
+published with CI verification. Remaining work is primarily presentation,
+cross-language conformance testing, engine improvements, and separate
+investigation of other rulesets such as Beginner/Reincarnation.
 
 ## Attribution
 

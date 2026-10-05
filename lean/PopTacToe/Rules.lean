@@ -44,6 +44,10 @@ def boardOf (cells : List Square) : Board :=
 def contains (pieces : Board) (cell : Square) : Bool :=
   pieces.getLsbD cell.val
 
+/-- Remove every bit in `clear` that is present in `pieces`. -/
+def clearBoard (pieces clear : Board) : Board :=
+  pieces ^^^ (pieces &&& clear)
+
 def emptyAt (state : State) (cell : Square) : Bool :=
   !(contains state.occupied cell)
 
@@ -94,12 +98,23 @@ structure Pushes where
   addBlue : Board := 0
   addRed : Board := 0
 
+def pushSource (center : Square) (direction : Direction) : Square :=
+  displaced center direction 1
+
+def pushDestination (center : Square) (direction : Direction) : Square :=
+  displaced center direction 2
+
+def pushCondition (snapshotBlue snapshotRed : Board) (center : Square)
+    (direction : Direction) : Bool :=
+  let occupied := snapshotBlue ||| snapshotRed
+  contains occupied (pushSource center direction) &&
+    !(contains occupied (pushDestination center direction))
+
 def collectPush (snapshotBlue snapshotRed : Board) (center : Square)
     (pushes : Pushes) (direction : Direction) : Pushes :=
-  let source := displaced center direction 1
-  let destination := displaced center direction 2
-  let occupied := snapshotBlue ||| snapshotRed
-  if contains occupied source && !(contains occupied destination) then
+  let source := pushSource center direction
+  let destination := pushDestination center direction
+  if pushCondition snapshotBlue snapshotRed center direction then
     if contains snapshotBlue source then
       { pushes with
         clear := pushes.clear ||| bit source
@@ -114,8 +129,8 @@ def collectPush (snapshotBlue snapshotRed : Board) (center : Square)
 def resolvePops (placedBlue placedRed : Board) (target : Square) : Board × Board :=
   let pushes := pushDirections.foldl
     (collectPush placedBlue placedRed target) {}
-  ((placedBlue &&& ~~~pushes.clear) ||| pushes.addBlue,
-    (placedRed &&& ~~~pushes.clear) ||| pushes.addRed)
+  (clearBoard placedBlue pushes.clear ||| pushes.addBlue,
+    clearBoard placedRed pushes.clear ||| pushes.addRed)
 
 def applyPlacement (state : State) (target : Square) : State :=
   match state.turn with

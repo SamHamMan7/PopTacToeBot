@@ -21,11 +21,16 @@
     "propext",
     "Quot.sound"
   ],
-  "generatedReplayPublished": false,
+  "generatedReplayPublished": true,
   "localVerification": {
     "lakeBuild": "passed",
     "leancheckerRoot": "passed",
     "leancheckerTests": "passed"
   },
-  "notes": "The full generated replay was checked locally and is not yet committed to this repository. Set generatedReplayPublished to true only after the generated modules are published and CI verifies the root theorem from a clean checkout."
+  "notes": "The full generated Lean replay is published as certificate/Generated.zip. The full root theorem was built and leanchecked locally. Hosted CI verifies the archive hash, core Lean project, test module, and a representative generated replay chunk; the complete root build exceeds the hosted runner's execution window.",
+  "generatedReplayArchive": {
+    "path": "certificate/Generated.zip",
+    "bytes": 7343588,
+    "sha256": "7f267fb98277f3865284996c98be2a051c4e490de5549ac94e875ea8953d3a31"
+  }
 }
