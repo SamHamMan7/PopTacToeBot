@@ -1,0 +1,52 @@
+name: Rules and conformance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "*.cpp"
+      - "web/**"
+      - "conformance/**"
+      - ".github/workflows/rules.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "*.cpp"
+      - "web/**"
+      - "conformance/**"
+      - ".github/workflows/rules.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build C++ rule tests
+        run: g++ -std=c++20 -O2 -Wall -Wextra -Wpedantic pop_tac_toe_tests.cpp -o poptests
+
+      - name: Run C++ rule tests
+        run: ./poptests
+
+      - name: Run browser rule tests
+        run: node web/engine.test.mjs
+
+      - name: Build C++ conformance dumper
+        run: g++ -std=c++20 -O2 -Wall -Wextra -Wpedantic conformance/conformance_dump.cpp -o conformance_cpp
+
+      - name: Compare C++ and browser transitions
+        shell: bash
+        run: |
+          ./conformance_cpp > conformance/cpp.out
+          node web/conformance_dump.mjs > conformance/js.out
+          diff -u conformance/cpp.out conformance/js.out

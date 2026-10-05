@@ -126,8 +126,8 @@ game-theoretic result.
 - `pop_tac_toe_tests.cpp`: rules and tactical regression tests
 - `match.py`: external Fairy-Stockfish match runner
 
-Additional research tools may include the proof solver, state counter, and
-strategy verifier.
+Additional research tools include the proof solver, state counter, strategy
+verifier, Lean formalization, and cross-language conformance checks.
 
 ## Formal result
 
@@ -164,10 +164,11 @@ expanded by CI before verification.
 
 ## Current research direction
 
-The Torus winner is established and the full generated Lean replay is now
-published with CI verification. Remaining work is primarily presentation,
-cross-language conformance testing, engine improvements, and separate
-investigation of other rulesets such as Beginner/Reincarnation.
+The Torus winner is established and the full generated Lean replay is published.
+CI now checks both the formal proof artifacts and shared C++/browser transition
+behavior. Remaining work is primarily release packaging, citation/archive
+metadata, presentation, engine improvements, and separate investigation of other
+rulesets such as Beginner/Reincarnation.
 
 ## Attribution
 
@@ -181,5 +182,4 @@ No Fairy-Stockfish binary, WebAssembly file, neural-network file, or
 
 ## License
 
-A project license will be selected before the repository is made public. Until
-then, the repository remains private.
+This project is released under the MIT License. See `LICENSE`.
