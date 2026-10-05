@@ -376,7 +376,8 @@ Normal users then only open the website. Terminal commands remain developer and 
 
 ## Remaining work
 
-1. Add cross-language conformance tests for the browser, C++ engine, and Lean model.
-2. Optionally publish the original binary certificate and standalone verifier alongside the Lean replay.
-3. Continue engine work and investigate other rulesets separately from this theorem.
-4. Polish presentation and archival documentation for a research release.
+1. Publish the original binary certificate and standalone verifier alongside the Lean replay.
+2. Extend the current C++/browser conformance suite with Lean-generated transition fixtures if desired.
+3. Choose a repository license and create a stable tagged research release.
+4. Continue engine work and investigate other rulesets separately from this theorem.
+5. Polish presentation and archival documentation for a research release.
