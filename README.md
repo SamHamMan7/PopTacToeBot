@@ -182,5 +182,4 @@ No Fairy-Stockfish binary, WebAssembly file, neural-network file, or
 
 ## License
 
-This repository is public, but no open-source license has been added yet. Choose
-and add a license before treating the code as a reusable open-source release.
+This project is released under the MIT License. See `LICENSE`.
