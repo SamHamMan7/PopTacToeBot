@@ -12,11 +12,14 @@ This directory is a no-build static website. It can be hosted directly on Cloudf
 - Browser-computer mode for the research ruleset
 - Simultaneous popping, Torus/Klein wrapping, Reincarnation, Ringout, Blocked, post-pop win checks, repetition draws, and movement variants
 - Background-worker AI so the page remains responsive
-- A formal-verification status panel that does not overstate the current proof
+- A formal-verification status panel for the exact solved Torus ruleset
 
-## Important AI note
+## AI note
 
-The current website uses a JavaScript alpha-beta preview. It is useful for the playable first release, but it is not yet the optimized C++ engine from the repository. The next engine step is to compile a small C++ binding layer plus the strong engine to WebAssembly and replace `ai-worker.mjs` with the WebAssembly worker.
+For the exact Torus computer ruleset, Strong and Maximum use the compiled
+WebAssembly bitboard engine, with JavaScript as an automatic fallback. Beginner
+Reincarnation uses the generic JavaScript search because the WebAssembly engine
+is Torus-only.
 
 ## Test the rules engine
 
@@ -24,7 +27,7 @@ The current website uses a JavaScript alpha-beta preview. It is useful for the p
 node engine.test.mjs
 ```
 
-The test file covers the most important C++ regression cases, including simultaneous pushes, edge behavior, post-pop wins, simultaneous-line draws, movement pops, and repetition identity.
+The test file covers the most important C++ regression cases, including simultaneous pushes, edge behavior, post-pop wins, simultaneous-line draws, movement pops, and repetition identity. The repository also contains a CI conformance check that runs equivalent deterministic transition cases through the C++ and browser engines and compares their serialized results.
 
 ## Deploy without a terminal
 
