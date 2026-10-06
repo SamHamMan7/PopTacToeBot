@@ -36,7 +36,7 @@ The test file covers the most important C++ regression cases, including simultan
 1. In Cloudflare, open **Workers & Pages**.
 2. Choose **Create application → Pages → Connect to Git**.
 3. Select the GitHub repository.
-4. Set the production branch to `main` after this change is merged.
+4. Set the production branch to `main`.
 5. Set the root directory to `web`.
 6. Leave the build command blank.
 7. Set the output directory to `.`.
