@@ -374,10 +374,12 @@ The workflow should also:
 
 Normal users then only open the website. Terminal commands remain developer and CI operations, not part of playing the game.
 
-## Remaining work
+## Status after v1.0
 
-1. Publish the original binary certificate and standalone verifier alongside the Lean replay.
-2. Extend the current C++/browser conformance suite with Lean-generated transition fixtures if desired.
-3. Choose a repository license and create a stable tagged research release.
-4. Continue engine work and investigate other rulesets separately from this theorem.
-5. Polish presentation and archival documentation for a research release.
+The exact Torus result is released under tag `v1.0.0-torus-solution`. The
+original `proof.ptc` certificate is attached to that release, the repository is
+MIT-licensed, and C++/browser conformance tests run in CI.
+
+Possible future extensions are outside the scope of the completed theorem:
+Lean-generated cross-language fixtures, stronger engines, other Pop Tac Toe
+rulesets, DOI archival, and a research paper or poster.
