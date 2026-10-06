@@ -2,10 +2,10 @@
 
 ## Verified theorem
 
-The published Lean replay proves one exact ruleset:
+The released result proves one exact Pop Tac Toe ruleset:
 
 ```text
-board: 8 × 8
+board: 8 x 8
 checkers: 8 per player
 edge: Torus
 all on board: Continue
@@ -18,15 +18,84 @@ simultaneous Blue and Red lines: Draw
 objective: Blue can force a terminal win before travel begins
 ```
 
-The website may offer many other rule combinations, but those combinations do not inherit this result. The theorem about the Torus solver configuration is not a theorem about Reincarnation, Ringout, Klein, Queen movement, or another checker count.
+The result applies only to this configuration. It does not establish a winner
+for Beginner/Reincarnation, Ringout, Klein, other movement rules, or other
+checker counts.
 
-The independently verified certificate contains 879,896 states. The full generated Lean replay is published in `certificate/Generated.zip` and checks successfully on Lean 4.32.0, including:
+The final Lean theorem is:
 
 ```text
 PopTacToe.Generated.Root.initial_blue_forces_win
 ```
 
-The reproduction commands are:
+The generated theorem reports only Lean's standard `propext` and
+`Quot.sound` axioms and no `sorryAx`.
+
+## Computational certificate
+
+The independently checked computational certificate contains 879,896 records.
+The original binary certificate is attached to the
+[`v1.0.0-torus-solution` release](https://github.com/SamHamMan7/PopTacToeBot/releases/tag/v1.0.0-torus-solution)
+as `proof.ptc`.
+
+```text
+bytes: 17,597,952
+SHA-256: 28789eb3b859be0e8999ec224dc946a94b0c3d139d6a577e00e86c52f6573647
+```
+
+The generated Lean replay is published in `certificate/Generated.zip`:
+
+```text
+bytes: 7,343,588
+SHA-256: 7f267fb98277f3865284996c98be2a051c4e490de5549ac94e875ea8953d3a31
+```
+
+The exact machine-readable metadata is in `certificate/manifest.json`.
+
+## Proof architecture
+
+The fast C++ search is used to discover the winning certificate, but the search
+program itself is not the trusted basis of the theorem.
+
+The certificate records local winning evidence over the finite placement phase.
+At a Blue-to-move state, one certified winning child is enough. At a Red-to-move
+state, every legal Red reply must lead to a certified winning child. Terminal
+Blue-win states form the base cases.
+
+The placement phase is well-founded under
+
+```text
+rank(state) = blueBin(state) + redBin(state)
+```
+
+because every placement decreases that rank. The proved strategy reaches a
+terminal Blue win before travel begins, so cyclic travel play is outside the
+certificate theorem.
+
+Torus symmetries are used to reduce duplicate positions. The Lean development
+contains the corresponding geometry, symmetry, canonicalization, transition,
+outcome, and force-win equivariance proofs needed to justify that reduction.
+
+Relevant checked Lean modules include:
+
+- `Rules.lean`
+- `Geometry.lean`
+- `Symmetry.lean`
+- `Canonical.lean`
+- `Equivariance.lean`
+- `PopEquivariance.lean`
+- `OutcomeEquivariance.lean`
+- `ForceWinEquivariance.lean`
+- `PackedRedCertificate.lean`
+- `WitnessedCertificate.lean`
+- `Tests.lean`
+
+The generated replay is stored separately in `certificate/Generated.zip` and
+extracts to `lean/PopTacToe/Generated/`.
+
+## Reproduce the Lean result
+
+The project pins Lean 4.32.0. From a fresh checkout:
 
 ```bash
 rm -rf lean/PopTacToe/Generated
@@ -37,349 +106,43 @@ lake env leanchecker PopTacToe.Generated.Root
 lake env leanchecker PopTacToe.Tests
 ```
 
-These checks completed without errors locally. Hosted CI verifies the published archive hash, builds the core Lean project and tests, and smoke-checks a representative generated replay chunk from a clean checkout. The complete generated-root build exceeds the current hosted runner execution window. The generated root theorem reports only the standard
-`propext` and `Quot.sound` axioms and no `sorryAx`.
+These commands completed successfully on the full local replay. The completed
+build contained 2149 jobs, including the generated root theorem.
 
-## The roles of the programs
+## Hosted CI scope
 
-### C++ solver
+GitHub Actions intentionally performs a bounded verification pass:
 
-The solver is allowed to be complicated and fast. It searches the game graph, uses bitboards, symmetry, transposition tables, and move ordering, and emits a certificate.
+1. extracts `certificate/Generated.zip`;
+2. builds the core Lean project;
+3. checks `PopTacToe.Tests`;
+4. builds a representative generated replay chunk;
+5. verifies the manifest constants and generated archive SHA-256.
 
-The solver is **not trusted** for the final theorem. A bug in the solver should make the certificate fail verification rather than create a false proof.
+The full generated-root replay is not rebuilt on the hosted runner because it
+exceeds the current runner execution window. The complete root replay was built
+and leanchecked locally with the pinned Lean version.
 
-### Certificate
+The separate rules workflow also runs the C++ regression suite, browser
+JavaScript regression suite, and deterministic C++/browser transition
+conformance cases.
 
-The certificate is data. It records enough local evidence to reconstruct the force-win argument without rerunning the expensive search.
+## Trust boundary
 
-For a proof that Blue can force a win before travel:
+The final theorem depends on:
 
-- A terminal Blue-win state is a base case.
-- At a Blue-to-move state, the certificate supplies one legal move to a certified winning child.
-- At a Red-to-move state, every legal Red reply must lead to a certified winning child.
-- Symmetric children may be represented by one canonical state, provided Lean proves that canonicalization preserves legal transitions and outcomes.
+- the Lean kernel;
+- the checked Lean rule model and soundness proofs;
+- the generated proof terms replayed from the certificate.
 
-The placement phase is especially convenient because every placement decreases
+The C++ solver is not trusted for theorem correctness: a solver error must still
+produce data that passes the independent checking and Lean replay layers.
 
-```text
-rank(state) = blueBin(state) + redBin(state)
-```
+## Release status
 
-by one. This makes the proof graph well-founded until both bins are empty. The current objective stops at that boundary, so travel cycles do not have to be included in this theorem.
+The completed result is released as
+[`v1.0.0-torus-solution`](https://github.com/SamHamMan7/PopTacToeBot/releases/tag/v1.0.0-torus-solution)
+under the MIT License.
 
-### Lean model and checker
-
-Lean contains a small, readable model of the rules plus a Boolean checker. It proves once that checker acceptance implies the mathematical force-win property. Lean then checks the generated certificate data.
-
-### Lean kernel
-
-The kernel checks the final proof term. The audit command is:
-
-```text
-#print axioms PopTacToe.Generated.Root.initial_blue_forces_win
-```
-
-A finished kernel-only result should not contain `sorryAx`, a project-specific assumption, or a native-computation axiom. Standard `propext` and `Quot.sound` may remain, depending on library lemmas used by the development.
-
-## Recommended repository structure
-
-```text
-lean/
-  lean-toolchain
-  lakefile.toml
-  PopTacToe/
-    Basic.lean
-    Rules.lean
-    Transition.lean
-    Outcome.lean
-    Reachable.lean
-    Symmetry.lean
-    Canonical.lean
-    ForceWin.lean
-    CertificateFormat.lean
-    CertificateChecker.lean
-    CertificateSoundness.lean
-    Generated/
-      Manifest.lean
-      Rank00/
-      Rank01/
-      ...
-      Rank16/
-    FullCertificate.lean
-    Tests.lean
-certificate/
-  manifest.json
-  rank-00/
-  rank-01/
-  ...
-  rank-16/
-```
-
-The generated Lean modules should be reproducible outputs of a certificate-conversion tool. Do not edit them by hand.
-
-## Core Lean definitions
-
-Illustrative declarations follow. The exact names should match the existing milestone.
-
-```lean
-namespace PopTacToe
-
-abbrev Square := Fin 64
-
-inductive Player
-  | blue
-  | red
-  deriving DecidableEq, Repr
-
-structure State where
-  blue       : BitVec 64
-  red        : BitVec 64
-  blueBin    : Fin 9
-  redBin     : Fin 9
-  sideToMove : Player
-  deriving DecidableEq, Repr
-
-inductive Move
-  | place (to : Square)
-  | travel (from to : Square)
-  deriving DecidableEq, Repr
-
-inductive Outcome
-  | ongoing
-  | blueWin
-  | redWin
-  | draw
-  deriving DecidableEq, Repr
-
-end PopTacToe
-```
-
-Use one executable transition definition as the source of truth:
-
-```lean
-def applyMove? (s : State) (m : Move) : Option State := ...
-```
-
-Then define legality through it, or prove that a separate legal-move generator agrees with it.
-
-## Force-win predicate for the finite placement objective
-
-A proof-friendly relation can mirror the AND/OR graph:
-
-```lean
-inductive BlueForcesWinBeforeTravel : State → Prop
-  | terminal
-      (h : outcome s = .blueWin) :
-      BlueForcesWinBeforeTravel s
-
-  | blueChoice
-      (hTurn : s.sideToMove = .blue)
-      (hOngoing : outcome s = .ongoing)
-      (m : Move)
-      (child : State)
-      (hApply : applyMove? s m = some child)
-      (hChild : BlueForcesWinBeforeTravel child) :
-      BlueForcesWinBeforeTravel s
-
-  | redAll
-      (hTurn : s.sideToMove = .red)
-      (hOngoing : outcome s = .ongoing)
-      (hAll : ∀ m child,
-        applyMove? s m = some child →
-        BlueForcesWinBeforeTravel child) :
-      BlueForcesWinBeforeTravel s
-```
-
-In practice, the theorem may use rank-indexed predicates or finite maps so that Lean can assemble proofs efficiently.
-
-## Certificate entry design
-
-A compact logical entry can be modeled as:
-
-```lean
-structure StateKey where
-  blue       : UInt64
-  red        : UInt64
-  blueBin    : UInt8
-  redBin     : UInt8
-  sideToMove : Player
-  deriving DecidableEq, Repr
-
-inductive Witness
-  | terminalBlueWin
-  | blueMove (move : EncodedMove) (child : StateKey)
-  | redReplies (children : Array StateKey)
-  deriving Repr
-
-structure Entry where
-  key     : StateKey
-  witness : Witness
-  deriving Repr
-```
-
-For a Red node, the checker should regenerate all legal moves itself, canonicalize their children, remove duplicates in a proved-safe way, and compare that complete set with the referenced child keys. The certificate must not be allowed to omit an inconvenient Red reply.
-
-## Local checker
-
-```lean
-def localCheck
-    (alreadyVerified : StateKey → Bool)
-    (entry : Entry) : Bool :=
-  match decode entry.key, entry.witness with
-  | some s, .terminalBlueWin =>
-      outcome s == .blueWin
-  | some s, .blueMove encoded childKey =>
-      s.sideToMove == .blue &&
-      match decodeMove encoded, decode childKey with
-      | some m, some child =>
-          applyMove? s m == some child &&
-          canonicalKey child == childKey &&
-          alreadyVerified childKey
-      | _, _ => false
-  | some s, .redReplies childKeys =>
-      s.sideToMove == .red &&
-      canonicalChildren s == childKeys &&
-      childKeys.all alreadyVerified
-  | _, _ => false
-```
-
-The essential theorem is generic:
-
-```lean
-theorem localCheck_sound
-    (hPrevious : ∀ key, alreadyVerified key = true →
-      BlueForcesWinBeforeTravel (decodeState key))
-    (hCheck : localCheck alreadyVerified entry = true) :
-    BlueForcesWinBeforeTravel (decodeState entry.key) := by
-  ...
-```
-
-This theorem is the trust bridge. It must be proved manually from the definitions, not assumed for the generated certificate.
-
-## Symmetry milestone
-
-The Torus placement search uses 512 spatial maps: eight square symmetries combined with 64 row/column translations. Lean should define the same transformations and prove:
-
-```lean
-theorem transform_applyMove
-    (g : TorusSymmetry) :
-    applyMove? (transformState g s) (transformMove g m) =
-      Option.map (transformState g) (applyMove? s m) := by
-  ...
-
-theorem transform_outcome
-    (g : TorusSymmetry) :
-    outcome (transformState g s) = outcome s := by
-  ...
-
-theorem canonicalKey_invariant
-    (g : TorusSymmetry) :
-    canonicalKey (transformState g s) = canonicalKey s := by
-  ...
-```
-
-Do not merely reimplement the C++ canonicalizer and test it. The theorem must connect transformed legal moves and outcomes.
-
-## Chunking the 879,896-state certificate
-
-A practical layout is:
-
-```text
-rank 0  : boundary/terminal entries
-rank 1  : references only rank 0
-rank 2  : references only rank 1 or lower
-...
-rank 16 : contains the initial state
-```
-
-Split each rank into deterministic chunks, for example 2,000–10,000 entries per generated module. Each chunk exports a theorem that its keys are verified assuming the lower-rank map.
-
-```lean
-theorem rank07_chunk003_sound :
-    VerifiedMap rank07Chunk003 := by
-  exact verifyChunk_sound lowerRanks rank07Chunk003 (by decide)
-```
-
-For a certificate this large, one enormous `by decide` is likely to be slow and memory-hungry. Prefer generated proof terms or small reducible checks whose results are combined by ordinary theorems. Measure chunk size on the pinned Lean version.
-
-## Pure-kernel versus native checking
-
-There are two different products:
-
-1. **Fast Lean executable verification** — compile a Lean checker and run it over the binary certificate. This is valuable independent validation, but an IO program printing `PASS` is not itself a theorem.
-2. **Kernel theorem** — elaborate proof terms showing that the initial state satisfies the force-win predicate.
-
-Native evaluation is fast, but it introduces a native-computation assumption for the asserted result. If the goal is validation by `leanchecker` with only the normal logical axioms, use kernel-reducible proofs or generated proof terms rather than `native_decide`.
-
-## Manifest and reproducibility
-
-Publish a manifest beside the certificate:
-
-```json
-{
-  "format": "poptactoe-certificate-v1",
-  "ruleset": "torus-continue-all-on-board-king-8-v1",
-  "objective": "blue-forced-terminal-win-before-travel",
-  "stateCount": 879896,
-  "solverCommit": "<git commit>",
-  "converterCommit": "<git commit>",
-  "leanToolchain": "leanprover/lean4:v4.32.0",
-  "certificateSha256": "<sha256>",
-  "rootKey": "<canonical initial state>",
-  "chunks": [
-    {"rank": 0, "path": "rank-00/chunk-000.ptc", "sha256": "..."}
-  ]
-}
-```
-
-The verifier should reject a mismatched format version, ruleset ID, checker count, state count, root key, or chunk hash.
-
-## Cross-language conformance
-
-A Lean theorem proves facts about the Lean model. To justify that the website and C++ engine implement that model, add shared transition vectors:
-
-```text
-input state + move
-expected legal/illegal result
-expected child state
-expected pushed pieces
-expected outcome
-```
-
-Generate thousands of deterministic cases and run them through:
-
-- the reference C++ `GameState`
-- the optimized C++ bitboard engine
-- the JavaScript browser engine
-- a Lean evaluator or exported Lean test data
-
-This does not replace the theorem, but it catches encoding drift between products.
-
-## CI without normal terminal use
-
-After the Lean sources and generated certificate modules are committed, GitHub Actions can run the verification on every relevant change:
-
-```text
-lake build
-lake env leanchecker PopTacToe.FullCertificate
-```
-
-The workflow should also:
-
-- verify every manifest hash
-- regenerate a small fixture and compare it byte-for-byte
-- run C++ and JavaScript rule tests
-- print the axioms of the final theorem
-- upload a verification report as an artifact
-
-Normal users then only open the website. Terminal commands remain developer and CI operations, not part of playing the game.
-
-## Status after v1.0
-
-The exact Torus result is released under tag `v1.0.0-torus-solution`. The
-original `proof.ptc` certificate is attached to that release, the repository is
-MIT-licensed, and C++/browser conformance tests run in CI.
-
-Possible future extensions are outside the scope of the completed theorem:
-Lean-generated cross-language fixtures, stronger engines, other Pop Tac Toe
-rulesets, DOI archival, and a research paper or poster.
+Further work such as stronger engines, other Pop Tac Toe rulesets, DOI archival,
+or a paper/poster is separate from this completed theorem.
