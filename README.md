@@ -162,13 +162,15 @@ SHA-256, and SHA-256 of the published generated-replay archive. The generated
 Lean modules are stored compactly as `certificate/Generated.zip` and are
 expanded by CI before verification.
 
-## Current research direction
+## Release
 
-The Torus winner is established and the full generated Lean replay is published.
-CI now checks both the formal proof artifacts and shared C++/browser transition
-behavior. Remaining work is primarily release packaging, citation/archive
-metadata, presentation, engine improvements, and separate investigation of other
-rulesets such as Beginner/Reincarnation.
+The completed Torus result is published as
+[v1.0.0-torus-solution](https://github.com/SamHamMan7/PopTacToeBot/releases/tag/v1.0.0-torus-solution).
+The release includes the original `proof.ptc` certificate; its SHA-256 is
+`28789eb3b859be0e8999ec224dc946a94b0c3d139d6a577e00e86c52f6573647`.
+
+Further work, such as stronger engines, other rulesets, a DOI archive, or a
+research paper, is separate from the completed v1.0 Torus solution.
 
 ## Attribution
 
