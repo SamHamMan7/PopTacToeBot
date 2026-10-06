@@ -159,8 +159,10 @@ lake env leanchecker PopTacToe.Tests
 The certificate metadata is recorded in `certificate/manifest.json`, including
 the exact ruleset, state count, Lean version, root theorem, certificate
 SHA-256, and SHA-256 of the published generated-replay archive. The generated
-Lean modules are stored compactly as `certificate/Generated.zip` and are
-expanded by CI before verification.
+Lean modules are stored compactly as `certificate/Generated.zip`. Hosted CI
+checks the archive hash, the core Lean project and tests, and a representative
+generated chunk; the complete generated-root replay was built and leanchecked
+locally because it exceeds the hosted runner's execution window.
 
 ## Release
 
