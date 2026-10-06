@@ -1,12 +1,19 @@
 cff-version: 1.2.0
-message: "If you use PopTacToeBot or its formally verified Torus result, please cite this repository."
+message: "If you use PopTacToeBot or its formally verified Torus result, please cite this software release."
 title: "PopTacToeBot"
 type: software
+version: "1.0.0"
+date-released: 2026-10-06
+license: MIT
 authors:
   - family-names: Gu
     given-names: Samuel
 repository-code: "https://github.com/SamHamMan7/PopTacToeBot"
 url: "https://poptactoebot.pages.dev/"
+identifiers:
+  - type: url
+    value: "https://github.com/SamHamMan7/PopTacToeBot/releases/tag/v1.0.0-torus-solution"
+    description: "v1.0.0 formally verified Torus solution release"
 abstract: "Research software, certificate verification, and a Lean formalization establishing a Blue forced win for one exact 8x8 Torus Pop Tac Toe ruleset."
 keywords:
   - Pop Tac Toe
