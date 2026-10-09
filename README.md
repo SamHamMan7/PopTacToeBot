@@ -129,6 +129,30 @@ game-theoretic result.
 Additional research tools include the proof solver, state counter, strategy
 verifier, Lean formalization, and cross-language conformance checks.
 
+## Beginner/Reincarnation research
+
+The Torus theorem does not apply to Beginner/Reincarnation. Experimental work
+on that ruleset lives in `pop_tac_toe_beginner_proof.cpp`. It searches only
+for a positive finite forced-win certificate and never interprets an exhausted
+search as a loss or draw. D4 board symmetries are canonicalized, but colors and
+the side to move are preserved.
+
+Build and sanity-check it with:
+
+```bash
+g++ -std=c++20 -O3 -march=native -DNDEBUG -Wall -Wextra -Wpedantic pop_tac_toe_beginner_proof.cpp -o beginnerproof.exe
+./beginnerproof.exe selftest
+```
+
+A first 3-checker search can be run with:
+
+```bash
+./beginnerproof.exe blue 3 12 1000000 beginner3-blue.ptc
+```
+
+If the result is `PROVEN_WIN`, the emitted certificate is a ranked acyclic
+proof DAG. If the result is `UNKNOWN`, no game-theoretic conclusion follows.
+
 ## Formal result
 
 For the tested Torus configuration above, Blue can force a terminal win before
