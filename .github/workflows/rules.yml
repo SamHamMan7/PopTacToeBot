@@ -38,6 +38,12 @@ jobs:
       - name: Run C++ rule tests
         run: ./poptests
 
+      - name: Build Beginner proof prover
+        run: g++ -std=c++20 -O2 -Wall -Wextra -Wpedantic pop_tac_toe_beginner_proof.cpp -o beginner_proof
+
+      - name: Run Beginner proof prover self-test
+        run: ./beginner_proof selftest
+
       - name: Run browser rule tests
         run: node web/engine.test.mjs
 
